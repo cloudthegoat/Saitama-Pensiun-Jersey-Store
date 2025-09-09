@@ -46,11 +46,17 @@ Soal Nomor 1
 
 Soal Nomor 2    
 ![Bagan Request Client](Gambar_Bagan_Request_Client.png)
+<<<<<<< HEAD
 Kaitan urls.py, views.py, models.py, dan berkas html
 - urls.py berfungsi sebagai peta yang ngecocokin URL yg diminta oleh user dgn fungsi yg ada di views.py
 - views.py akan menerima request dari urls.py, memprosesnya, lalu jika butuh membaca/menulis data maka akan manggil si models.py
 - models.py tugasnya sebagai jembatan ke database, nyediain representasi data, ngelakuin query, lalu ngembaliin hasil ke view
 - kalo datanya udah siap, views.py bakal nerusin ke berkas HTML yg punya tugas utk ngerender tampilan halaman web supaya bisa dilihat oleh user
+=======
+
+
+
+>>>>>>> 3606812187735739925d0b2c91ed59479bf22958
 
 Soal Nomor 3
 - Menyimpan semua settings yang mengontrol jalannya aplikasi Django
