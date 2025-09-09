@@ -45,7 +45,7 @@ Soal Nomor 1
 - SELESAI DEH
 
 Soal Nomor 2    
-![Gambar Bagan Request Client]([images/Gambar_Bagan](https://github.com/cloudthegoat/Saitama-Pensiun-Jersey-Store/blob/eb37ee2f46252a7910de815b0b0bafa4549f3626/Gambar_Bagan_Request_Client.png))
+![Gambar Bagan Request Client]([[images/Gambar_Bagan](https://github.com/cloudthegoat/Saitama-Pensiun-Jersey-Store/blob/eb37ee2f46252a7910de815b0b0bafa4549f3626/Gambar_Bagan_Request_Client.png)](https://github.com/cloudthegoat/Saitama-Pensiun-Jersey-Store/blob/main/Gambar_Bagan_Request_Client.png?raw=true))
 
 
 
