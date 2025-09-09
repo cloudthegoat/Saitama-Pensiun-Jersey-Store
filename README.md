@@ -45,9 +45,12 @@ Soal Nomor 1
 - SELESAI DEH
 
 Soal Nomor 2    
-![Gambar Bagan Request Client](images/Gambar_Bagan)
-
-
+![Bagan Request Client](Gambar_Bagan_Request_Client.png)
+Kaitan urls.py, views.py, models.py, dan berkas html
+- urls.py berfungsi sebagai peta yang ngecocokin URL yg diminta oleh user dgn fungsi yg ada di views.py
+- views.py akan menerima request dari urls.py, memprosesnya, lalu jika butuh membaca/menulis data maka akan manggil si models.py
+- models.py tugasnya sebagai jembatan ke database, nyediain representasi data, ngelakuin query, lalu ngembaliin hasil ke view
+- kalo datanya udah siap, views.py bakal nerusin ke berkas HTML yg punya tugas utk ngerender tampilan halaman web supaya bisa dilihat oleh user
 
 Soal Nomor 3
 - Menyimpan semua settings yang mengontrol jalannya aplikasi Django
@@ -81,8 +84,8 @@ Soal Nomor 5
 - Django ini ternyata banyak dipake oleh perusahaan-perusahaan besar, kayak Instagram, Pinterest, Mozilla, dan masih bnyk lagi. Ini ngebuat pemula belajar sesuatu yg relevan dgn dunia kerja saat ini, bukan cuma framework yg dipake buat belajar doang trus kalo udah masuk ke industri kerja ga kepake lagi.
 
 Referensi:
-https://realpython.com/tutorials/django/
-https://www.djangoproject.com/
+- https://realpython.com/tutorials/django/
+- https://www.djangoproject.com/~
 
 Soal Nomor 6
 - Gak ada kak, aman semua. Asdos nya udah pada gercep kemaren, setiap ditanya langsung jawab dgn jelas, ga kaya asdos matkul d***, eh sorry hehe. Keep up the good work pokoknya kakak-kakak asdos PBP!
