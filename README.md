@@ -52,6 +52,10 @@ Kaitan urls.py, views.py, models.py, dan berkas html
 - models.py tugasnya sebagai jembatan ke database, nyediain representasi data, ngelakuin query, lalu ngembaliin hasil ke view
 - kalo datanya udah siap, views.py bakal nerusin ke berkas HTML yg punya tugas utk ngerender tampilan halaman web supaya bisa dilihat oleh user
 
+Referensi:
+- PPT "Introduction to the Internet and Web Framework" by Tim Dosen PBP (Page 28)
+- https://www.w3schools.com/django/django_intro.php
+
 Soal Nomor 3
 - Menyimpan semua settings yang mengontrol jalannya aplikasi Django
 - Menentukan working environment, apakah aplikasi bekerja dalam development mode atau production mode
