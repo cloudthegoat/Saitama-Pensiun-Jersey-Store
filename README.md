@@ -154,12 +154,24 @@ hal yg akan terjadi jika tidak menambahkan csrf_token:
 bagaimana hal tersebut dimanfaatkan oleh penyerang?
 - Penyerang akan membuat page yg berisi form/post request tersembunyi. Jika korban dalam keadaan login ke aplikasi django, browser korban akan otomatis mengirimkan cookie session saat mengunjunginya page penyerang. Nah, karena tidak ada csrf_token, server gak akan bisa bedain apakah request berasal dari aplikasi sah atau dari situs gak jelas. Akibatnya, aksi berbahaya bisa dijalankan atas nama korban itu (misal ganti password, transfer uang, posting sesuatu, dan masih bnyk lagi)
 
-5.
+5. Step by step mengimplementasikaan checklist
+1) membuat skeleten sebagai kerangka views
+- membuat folder templates baru di root project, lalu membuat berkas html baru bernama base.html yg berisi template tags Djangp
+- menambahkan base.html ke variabel templates di settings.py
+- mengubah main.html di folder main/templates supaya menggunakan base.html sbg template utama
+2) membuat form input product
+- membuat file baru bernama forms.py di folder main
+- menambahkan fungsi create_product dan show_product di views.py
+- menambahkan parh URL create_product dan show_product di urls.py
+- memperbarui kode di main.html utk menampilkan data product dan button add product
+- membuat dua file baru di folder main/templates, yaitu create_news.html utk halaman form input nya, dan news_detail.html utk detail product nya
+- menambahkan url proyek ke settings.py
+3) membuat pengembalian data dlm bentuk XML, JSON, XML by ID, dan JSON by ID dan mengakses keempat URL menggunakan postman
+- membuat fungsi show_xml, show_json, show_xml_by_id, dan show_json_by_id di views.py
+- membuat request baru utk url xml, json, xml by product id, dan json by product id lalu melakukan screenshot utk masing-masing request
+- SELESAI
 
-6. Gak ada kak
-
-
-
+6. Gak ada kak, kemaren aman semua
 
 Mengakses keempat URL dengan menggunakan Postman
 ![XML](Postman_Request_XML.png)
