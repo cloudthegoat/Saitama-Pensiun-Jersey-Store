@@ -1,6 +1,6 @@
 Tautan Aplikasi PWS: https://kadek-ngurah-saitamapensiunjerseystore.pbp.cs.ui.ac.id/
 
-Tugas Individu 1
+Tugas Individu 2
 
 Jawaban dari pertanyaan-pertanyaan di Tugas Individu 2:
 
@@ -96,9 +96,9 @@ Referensi:
 Soal Nomor 6
 - Gak ada kak, aman semua. Asdos nya udah pada gercep kemaren, setiap ditanya langsung jawab dgn jelas, ga kaya asdos matkul d***, eh sorry hehe. Keep up the good work pokoknya kakak-kakak asdos PBP!
 
-Tugas Individu 2
+Tugas Individu 3
 
-Jawaban dari pertanyaan-pertanyaan di Tugas Individu 2:
+Jawaban dari pertanyaan-pertanyaan di Tugas Individu 3:
 
 1. Alasan memerlukan data delivery dalam pengimplementasian sebuah platform
 - karena data delivery memungkinkan data yg dikumpulkan di bagian satu (contohnya backend, database, API) dikirim ke bagian yang lain (contohnya frontend, aplikasi mobile) sehingga data menjadi sinkron dan tidak terjadi inkonsistensi.
@@ -178,3 +178,82 @@ Mengakses keempat URL dengan menggunakan Postman
 ![JSON](Postman_Request_JSON.png)
 ![XML by ID](Postman_Request_XML_by_ID.png)
 ![JSON by ID](Postman_Request_JSON_by_ID.png)
+
+Tugas Individu 3
+
+Jawaban dari pertanyaan-pertanyaan di Tugas Individu 3:
+
+1. AuthenticationForm adalah form bawaan Django yg biasanya dipakai utk memproses login user. Secara default, AuthenticationForm menyediakan dua field, yaitu username & password. Saat form divalidasi, Django akan memeriksa apakah username & password cocok dgn data user yg tersimpan di database. Kalo cocok, form bakal menghasilkan objek user yg bisa diakses melalui form.get_user().
+## Kelebihan
+- Ga perlu membuat form login dari nol sehingga bisa menghemat waktu
+- Otomatis memakai backend autentikasi Django, mendukung hashing password, login, dan session management.
+- Memvalidasi akun secara otomatis
+- Gampang dipakai dgn LoginView (tinggal nambahin di URL routing)
+- Bisa dikustomisasi, seperti ditambahin widget, label, atau CSS
+## Kekurangan
+- Terbatas hanya utk login dasar (Ga mencakup fitur seperti remember me, two-factor authentication, atau captcha.)
+- Tampilan default sederhana (perlu dikustomisasi sendiri)
+- Kalo mau login dengan email/identifier lain, harus override field username/buat form kustom
+- Kurang fleksibel utk kebutuhan kompleks, misal ika butuh login dengan OAuth, social media, atau multi-step login, maka butuh utk dimodifikasi manual
+
+Referensi:
+https://docs.djangoproject.com/en/stable/topics/auth/default/#django.contrib.auth.forms.AuthenticationForm
+https://github.com/django/django/blob/main/django/contrib/auth/forms.py
+
+2. Autentikasi adalah proses memverifikasi identitas user, sedangkan otorisasi adalah proses menentukan hak akses user setelah identitas verifikasi. Contoh dari autentikasi adalah login dgn username & password, sedangkan contoh dari otorisasi adalah cuma admin yg boleh menghapus data.
+## Implementasi Autentikasi di Django
+Django punya sistem autentikasi bawaan di django.contrib.auth yang mencakup:
+- User model yg berfungsi menyimpan username, password, email, dsb
+- AuthenticationForm & LoginView yg berfungsi utk memproses login
+- AUTHENTICATION_BACKENDS yg berfungsi utk mengatur cara Django memverifikasi kredensial
+- Session framework yg berfungsi utk menyimpan status login user
+## Implementasi Otorisasi di Django
+Django juga menyediakan sistem otorisasi berbasis permissions & groups.
+- Permissions artinya setiap model dpt memiliki permission bawaan seperti add, change, delete, view. Kalo mau membuat permission kustom juga bisa
+- Groups merupakan sekumpulan permission yg bisa diberikan ke banyak user sekaligus
+Selain permission & groups, Django juga menyediakan decorator & mixins utk membatasi akses.
+- @login_required dipakai supaya hanya user yang login bisa mengakses view.
+- @permission_required('app_name.permission_code') dipakai supaya hanya user dengan permission tertentu bisa akses.
+- User.is_staff dan User.is_superuser merupakan level otorisasi khusus untuk admin.
+
+Referensi:
+https://docs.djangoproject.com/en/stable/topics/auth/default/
+https://docs.djangoproject.com/en/stable/topics/auth/default/#authorization
+https://docs.djangoproject.com/en/stable/topics/auth/
+
+3. Kelebihan dan kekurangan session dan cookies dalam konteks menyimpan state di aplikasi web
+## Kelebihan Cookies
+- Tidak membebani server karena data ada di browser
+- Bisa bertahan meskipun browser ditutup
+- Mudah dipakai karena lgsg tersedia di setiap request HTTP
+- Bisa diakses lintas halaman/domain
+## Kekurangan Cookies
+- Ukuran terbatas (biasanya hanya 4KB per cookie)
+- Kurang aman karena bisa dilihat dan dimodifikasi oleh user
+- Tidak cocok untuk data sensitif, seperti password, data pribadi, token
+- Dikirim di setiap re
+
+- Bisa menyimpan data kompleks (dgn menggunakan dictionary, objek user, dsb)
+- Size fleksibel 
+
+5. Cara mengimplementasikan checklist
+- menambahkan fungsi register ke dalam views.py
+- membuat file html baru, yaitu register.html di subfolder templates dalam folder main
+- menambahkan URL routing utk fungsi view register
+- menambahkan fungsi login_user ke dalam views.py
+- membuat file html baru, yaitu login.html di subfolder templates dalam folder main
+- menambahkan URL routing utk fungsi view login_user
+- menambahkan fungsi logout_user ke dalam views.py
+- menambahkan logout button di main.html
+- menambahkan URL routing utk fungsi view login_user
+- menambahkan potongan kode "@login_required(login_url='/login')" di atas fungsi view show_main dan show_product
+- mengubah kode pada blok "if form.is_valid()" di fungsi view login_user
+- menambahkan potongan kode "'last_login': request.COOKIES['last_login']" ke dlm variabel context di fungsi views show_main
+- mengubah fungsi views logout_user di views.py
+- menambahkan informasi sesi terakhir login di main.html
+- menambahkan potongan kode "user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)" pada model Product di models.py utk menghubungkan satu user dgn satu product melalui sebuah relationship
+- mengubah kode di blok "if form.is_valid() and request.method == 'POST':" di fungsi view create_product di views.py
+- memodikasi fungsi view show_main di views.py supaya user bisa memilih untuk menampilkan product miliknya sendiri saja (opsi 'my') atau menampilkan ssemua product yg tersedia (opsi 'all') dan informasi name dari user akan menampilkan username dari user yg sedang login
+- menambahkan tombol filter 'My' dan 'All' di main.html
+- menampilkan nama penjual product di main.html
+- membuat dua akun user dan 3 dummy data pada masing-masing user di server lokal
