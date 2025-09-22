@@ -231,10 +231,36 @@ https://docs.djangoproject.com/en/stable/topics/auth/
 - Ukuran terbatas (biasanya hanya 4KB per cookie)
 - Kurang aman karena bisa dilihat dan dimodifikasi oleh user
 - Tidak cocok untuk data sensitif, seperti password, data pribadi, token
-- Dikirim di setiap re
-
+- Dikirim di setiap request sehingga menambah overhead jaringan
+## Kelebihan Sessions
+- Lebih aman karena data tidak disimpan di client
 - Bisa menyimpan data kompleks (dgn menggunakan dictionary, objek user, dsb)
-- Size fleksibel 
+- Size fleksibel karena tidak dibatasi 4KB saja seperti cookie
+## Kekurangan Sessions
+- Membebani server karena semua data harus disimpan di sisi server (memory, database, cache)
+- Butuh manajemen tambahan, misalnya session timeout, cleanup, scaling untuk aplikasi besar
+- Kalau session berakhir, user harus login ulang
+- Butuh cookie atau mekanisme lain untuk menyimpan session ID
+
+Referensi:
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
+https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
+
+4. Tidak aman-aman bgt karena user bisa melihat & mengubah cookies melalui developer tools browser. Beberapa risiko potensial yg harus diwaspadai.
+- Risiko penyadapan, yaitu jika dikirim melalui koneksi HTTP biasa, cookies bisa dicuri
+- Cross-Site Scripting (XSS), yaitu jika cookie tidak dilindungi, script berbahaya bisa mencuri cookie melalui document.cookie
+- Cross-Site Request Forgery (CSRF), yaitu cookie dikirim otomatis oleh browser ke server sehingga bisa dimanfaatkan oleh attacker utk mengirim request palsu.
+## Cara Django Menangani Hal Tersebut
+Django punya banyak mekanisme bawaan untuk meminimalkan risiko, bbrp di antaranya adalah
+- HttpOnly flag yg berfungsi utk mencegah akses cookie via JavaScript
+- Secure flag yg berfungsi utk memastikan cookie hanya dikirim lewat HTTPS, bukan HTTP
+- SameSite attribute yg berfungsi utk melindungi dari CSRF dgn membatasi pengiriman cookie lintas domain
+- Django secara default menambahkan CSRF token utk form POST sehingga request palsu tidak bisa hanya mengandalkan cookie
+- Django bisa menggunakan signed cookies via django.core.signin sehingga isi cookie tidak bisa dimodifikasi tanpa terdeteksi
+
+Referensi:
+https://docs.djangoproject.com/en/stable/topics/http/sessions/#using-cookies-directly
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
 
 5. Cara mengimplementasikan checklist
 - menambahkan fungsi register ke dalam views.py
