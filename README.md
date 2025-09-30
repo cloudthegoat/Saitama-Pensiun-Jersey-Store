@@ -164,7 +164,7 @@ bagaimana hal tersebut dimanfaatkan oleh penyerang?
 - menambahkan fungsi create_product dan show_product di views.py
 - menambahkan parh URL create_product dan show_product di urls.py
 - memperbarui kode di main.html utk menampilkan data product dan button add product
-- membuat dua file baru di folder main/templates, yaitu create_news.html utk halaman form input nya, dan news_detail.html utk detail product nya
+- membuat dua file baru di folder main/templates, yaitu create_product.html utk halaman form input nya, dan product_detail.html utk detail product nya
 - menambahkan url proyek ke settings.py
 3) membuat pengembalian data dlm bentuk XML, JSON, XML by ID, dan JSON by ID dan mengakses keempat URL menggunakan postman
 - membuat fungsi show_xml, show_json, show_xml_by_id, dan show_json_by_id di views.py
@@ -179,9 +179,9 @@ Mengakses keempat URL dengan menggunakan Postman
 ![XML by ID](Postman_Request_XML_by_ID.png)
 ![JSON by ID](Postman_Request_JSON_by_ID.png)
 
-Tugas Individu 3
+Tugas Individu 4
 
-Jawaban dari pertanyaan-pertanyaan di Tugas Individu 3:
+Jawaban dari pertanyaan-pertanyaan di Tugas Individu 4:
 
 1. AuthenticationForm adalah form bawaan Django yg biasanya dipakai utk memproses login user. Secara default, AuthenticationForm menyediakan dua field, yaitu username & password. Saat form divalidasi, Django akan memeriksa apakah username & password cocok dgn data user yg tersimpan di database. Kalo cocok, form bakal menghasilkan objek user yg bisa diakses melalui form.get_user().
 ## Kelebihan
@@ -283,3 +283,80 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
 - menambahkan tombol filter 'My' dan 'All' di main.html
 - menampilkan nama penjual product di main.html
 - membuat dua akun user dan 3 dummy data pada masing-masing user di server lokal
+
+Tugas Individu 5
+
+1. Urutan prioritas (cascade) ketika beberapa selector menargetkan elemen yang sama
+#### Browser bakalan milih deklarasi CSS berdasarkan urutan prioritas: 
+- (1) !important (yang dari author vs user juga dipertimbangkan oleh origin).
+- (2) Inline style (style="...") tanpa !important.
+- (3) Selector dengan ID (#header).
+- (4) Selector dengan kelas/attribute/pseudo-class (.nav, [type="text"], :hover).
+- (5) Type selector / pseudo-element (div, ::before).
+- (6) Jika spesifisitasnya sama maka aturan yg muncul belakangan (source order) menang.
+
+referensi: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_cascade/Specificity?
+
+2. Mengapa responsive design penting dan contoh aplikasi yg sudah/blm menerapkan RWD beserta alasannya
+### alasan:
+- User experience: memastikan konten dpt dibaca dan dinavigasi di layar kecil (mobile) sampai besar (desktop).
+- Aksesibilitas & performa: tata letak yang responsif biasanya memperhatikan ukuran gambar, teks, dan interaksi sehingga lebih cepat dan mudah digunakan.
+SEO & bisnis: mesin pencari memberi nilai pada situs mobile-friendly sehingga jangkauan pengguna lebih luas.
+### aplikasi yang sudah menerapkan RWD
+Airbnb adalah salah satu contoh perusahaan yg berfokus pada mobile & web. Halaman-halamannya dirancang agar berfungsi baik di berbagai ukuran layar. Alasan mereka menerapkan RWD adalah pengalaman pemesanan harus smooth di HP maupun desktop saat pengguna mencari dan memesan perjalanan.
+### aplikasi yang blm menerapkan RWD
+Craigslist merupakan salah satu aplikasi yang dikenal mempertahankan tampilan sangat sederhana dan tidak banyak melakukan redesign responsif, banyak analisis/desain case-study menunjukkan ia tetap bergantung pada UI klasik meski fungsional. Alasan mereka tidak menerapkan RWD adalah trade-off antara kesederhanaan, performa, dan model bisnis. Selain itu, beberapa layanan memilih tetap minimal karena target penggunanya.
+
+referensi:
+https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design
+https://responsivewebdesign.com/podcast/airbnb/
+https://webdesignerdepot.com/will-craigslist-ever-get-a-redesign-the-internets-most-stubborn-dinosaur/
+
+3. Perbedaan margin, border, dan padding serta cara implementasinya
+### Perbedaan:
+- Padding adalah ruang di dalam kotak. Tepatnya di antara content dan border. Menambah padding artinya menambah ruang dalam kotak.
+- Border adalah garis/perimeter di sekitar padding. Bisa punya lebar, gaya, warna.
+- Margin adalah ruang di luar border. Fungsinya utk memisahkan elemen dari elemen lain.
+
+### Cara mengimplementasikannya
+.box {
+  width: 300px;             
+  padding: 16px;              
+  border: 2px solid #333;     
+  margin: 24px;              
+  box-sizing: border-box;     
+}
+
+referensi: https://developer.mozilla.org/en-US/docs/Web/CSS/box-sizing?
+
+4. Konsep flexbox dan grid layout beserta kegunaannya
+### flexbox
+- Dirancang untuk satu dimensi. Biasanya dipakai utk mengatur item dalam satu baris atau satu kolom
+- Kuat untuk distribusi ruang di sepanjang satu sumbu, alignment (center, space-between, dll), dan reorder item secara fleksibel.
+- Kegunaan: utk navbar, card row, komponen UI yang perlu menyeimbangkan ukuran children nya.
+### grid layout
+- Dirancang untuk dua dimensi (baris dan kolom secara bersamaan).
+- Memungkinkan explicit grid (menentukan grid-template-columns/rows) dan penempatan item ke dalam area/garis tertentu.
+- Kegunaan: sangat cocok utk layout halaman besar (misal area header/main/sidebar/footer), dashboard, atau layout kompleks yang perlu kontrol baris/kolom dan area yang named.
+
+referensi: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout?
+
+5. Cara mengimplementasikan checklist
+- membuat view function baru bernama edit_product di views.py
+- membuat file html baru bernama edit_product.html di folder main/templates
+- melakukan routing untuk fungsi edit_product di urls.py
+- mengupdate loop product_list di main.html utk memunculkan button edit
+- membuat view function baru bernama delete_product di views.py
+- melakukan routing untuk fungsi delete_product di urls.py
+- mengupdate loop product_list di main.html utk memunculkan button delete
+- membuat file templates baru bernama navbar.html
+- menautkan navbar ke main.html
+- mengonfigurasi static files di settings.py
+- menambahkan global css
+- menghubungkan global css dgn bootstap
+- menambahkan custom styling ke global css
+- menambahkan card_product.html di main/templates
+- melakukan styling pada semua file di main/templates
+- membuat tiga button utk card product, yaitu read, edit, dan delete
+- menambahkan icon no-product.png di main.html jika tidak ada product untuk ditampilkan
+- SELESAI

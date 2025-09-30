@@ -1,0 +1,45 @@
+{% load static %}
+<div class="product-card">
+  {% if product.thumbnail %}
+    <img class="card-thumb" src="{{ product.thumbnail }}" alt="{{ product.name }}">
+  {% else %}
+    <img class="card-thumb" src="{% static 'images/placeholder-thumb.jpg' %}" alt="placeholder">
+  {% endif %}
+
+  <div class="card-body p-0">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <div class="card-title">
+          <a class="stretched-link text-white" href="{% url 'main:show_product' product.id %}">{{ product.name }}</a>
+        </div>
+        <div class="card-meta">
+          <b>{{ product.get_category_display }}</b> • <span class="small-muted">{{ product.created_at|date:"d M Y" }}</span>
+        </div>
+      </div>
+      <div>
+        {% if product.is_featured %}
+          <span class="badge-featured">Featured</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <p class="small-muted">{{ product.description|truncatewords:18 }}</p>
+
+    <div class="card-actions">
+      <div>
+        <a href="{% url 'main:show_product' product.id %}" class="btn btn-light btn-sm btn-card">Read</a>
+        {% if user.is_authenticated and product.user == user %}
+          <a href="{% url 'main:edit_product' product.pk %}" class="btn btn-sm btn-card btn-edit">Edit</a>
+          <button
+            data-url="{% url 'main:delete_product' product.pk %}"
+            onclick="confirmDelete(this.dataset.url)"
+            class="btn btn-sm btn-card btn-delete"
+          >
+            Delete
+          </button>
+        {% endif %}
+      </div>
+      <div class="small-muted">Author: {% if product.user %}{{ product.user.username }}{% else %}Anonymous{% endif %}</div>
+    </div>
+  </div>
+</div>

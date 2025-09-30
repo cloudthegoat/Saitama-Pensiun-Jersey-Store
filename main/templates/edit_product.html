@@ -5,8 +5,8 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="product-detail">
-        <h2 class="mb-3">Add Product</h2>
-        <p class="form-note">Isi data produk baru (nama, kategori, gambar, dlsb.).</p>
+        <h2 class="mb-3">Edit Product</h2>
+        <p class="form-note">Ubah data produk, lalu klik <strong>Save Changes</strong>.</p>
 
         <form method="POST" enctype="multipart/form-data" novalidate>
           {% csrf_token %}
@@ -15,7 +15,8 @@
             <tr>
               <td></td>
               <td>
-                <input type="submit" class="btn btn-primary" value="Add PRODUCT" />
+                <input type="submit" class="btn btn-primary" value="Save Changes" />
+                <a href="{% url 'main:show_product' form.instance.pk %}" class="btn btn-outline-light ms-2">Cancel</a>
               </td>
             </tr>
           </table>

@@ -1,0 +1,36 @@
+<nav class="navbar navbar-expand-lg navbar-dark navbar-sporty py-3">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'main:show_main' %}">
+        <div class="brand-badge">SPJS</div>
+        <div class="brand-text ms-2">
+            <strong>Saitama</strong>
+            <small>Pensiun Jersey Store</small>
+        </div>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'main:show_main' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Collections</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">{{ user.username }}</a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'main:create_product' %}">Add Product</a></li>
+            <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="nav-item"><a class="btn btn-outline-light btn-sm ms-2" href="{% url 'main:login' %}">Sign in</a></li>
+        <li class="nav-item"><a class="btn btn-warning btn-sm ms-2" href="{% url 'main:register' %}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

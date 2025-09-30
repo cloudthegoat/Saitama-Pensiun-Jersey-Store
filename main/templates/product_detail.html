@@ -1,16 +1,43 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<p><a href="{% url 'main:show_main' %}"><button>← Back to Product List</button></a></p>
+{% include 'navbar.html' %}
+<div class="container">
+  <a href="{% url 'main:show_main' %}" class="back-btn mb-3 d-inline-block">← Back to Product List</a>
 
-<h1>{{ product.name }}</h1>
-<p><b>{{ product.get_category_display }}</b>{% if product.is_featured %} | 
-    <b>Featured</b>{% endif %}<i>{{ news.created_at|date:"d M Y, H:i" }}</i></p>
+  <div class="row">
+    <div class="col-md-6">
+      {% if product.thumbnail %}
+        <img src="{{ product.thumbnail }}" alt="{{ product.name }}" class="img-fluid rounded-3 mb-3">
+      {% else %}
+        <img src="{% static 'images/placeholder-thumb.jpg' %}" alt="thumb" class="img-fluid rounded-3 mb-3">
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <div class="product-detail">
+        <h2>{{ product.name }}</h2>
+        <p class="small-muted"><b>{{ product.get_category_display }}</b> {% if product.is_featured %} • <span class="badge-featured">Featured</span>{% endif %}</p>
+        <p class="small-muted">Created: {{ product.created_at|date:"d M Y, H:i" }}</p>
+        <hr />
+        <div class="product-description">
+          {{ product.description|linebreaks }}
+        </div>
 
-{% if news.thumbnail %}
-<img src="{{ news.thumbnail }}" alt="News thumbnail" width="300">
-<br /><br />
-{% endif %}
+        <div class="mt-3">
+            {% if user.is_authenticated and product.user == user %}
+                <a href="{% url 'main:edit_product' product.pk %}" class="btn btn-primary me-2">Edit</a>
 
-<p>{{ news.content }}</p>
-
+                <button
+                    data-url="{% url 'main:delete_product' product.pk %}"
+                    onclick="confirmDelete(this.dataset.url)"
+                    class="btn btn-outline-danger"
+                >
+                    Delete
+                </button>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}

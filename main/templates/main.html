@@ -1,64 +1,66 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<h1>Saitama Pensiun Jersey Store</h1>
+{% include 'navbar.html' %}
 
-<h5>NPM: </h5>
-<p>{{ npm }}</p>
+<div class="container">
+  <div class="products-hero">
+    <div class="hero-left">
+      <h1 class="display-5">Saitama Pensiun <span class="kicker">Jersey</span> Store</h1>
+      <p class="lead">Koleksi jersey premium — Premier League, LaLiga, Serie A dan lainnya.</p>
+      <div class="mt-3">
+        <a href="{% url 'main:create_product' %}" class="btn btn-primary me-2">+ Add Product</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'main:logout' %}" class="btn btn-outline-light">Logout</a>
+        {% endif %}
+      </div>
+    </div>
 
-<h5>Name:</h5>
-<p>{{ name }}</p>
+    <div class="hero-right text-end">
+      <div class="d-flex flex-column align-items-end">
+        <div class="small-muted">
+          Sesi terakhir login:
+          <strong>
+            {% if last_login %}
+              {% comment %} Jika last_login adalah datetime, date filter mengembalikan format; jika bukan, date filter biasanya kosong -> fallback ke slice. {% endcomment %}
+              {% with formatted=last_login|date:"Y-m-d H:i:s" %}
+                {% if formatted %}
+                  {{ formatted }}
+                {% else %}
+                  {{ last_login|slice:":19" }}
+                {% endif %}
+              {% endwith %}
+            {% else %}
+              -
+            {% endif %}
+          </strong>
+        </div>
 
-<h5>Class:</h5>
-<p>{{ class }}</p>
+        <div class="small-muted">Active user: <strong>{{ user.username }}</strong></div>
+      </div>
+    </div>
+  </div>
 
-<a href="{% url 'main:create_product' %}">
-  <button>+ Add Product</button>
-</a>
+  <div class="filter-bar mb-4">
+    <a href="?filter=all" class="btn {% if request.GET.filter == 'all' or not request.GET.filter %}active{% endif %}">All</a>
+    <a href="?filter=my" class="btn {% if request.GET.filter == 'my' %}active{% endif %}">My Products</a>
+    <a href="?filter=featured" class="btn {% if request.GET.filter == 'featured' %}active{% endif %}">Featured</a>
+  </div>
 
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
-
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-<h5>Active user: {{ user.username }}</h5>
-
-<hr>
-
-<a href="?filter=all">
-    <button type="button">All Products</button>
-</a>
-<a href="?filter=my">
-    <button type="button">My Products</button>
-</a>
-
-{% if not product_list %}
-<p>Belum ada data product pada Saitama Pensiun Jersey Store.</p>
-{% else %}
-
-{% for product in product_list %}
-<div>
-  <h2><a href="{% url 'main:show_product' product.id %}">{{ product.name }}</a></h2>
-
-  <p><b>{{ product.get_category_display }}</b>{% if product.is_featured %} | 
-    <b>Featured</b>{% endif %}<i>{{ product.created_at|date:"d M Y H:i" }}</i></p>
-
-  {% if product.thumbnail %}
-  <img src="{{ product.thumbnail }}" alt="thumbnail" width="150" height="100">
-  <br />
-  {% endif %}
-
-  <p>{{ product.description|truncatewords:25 }}...</p>
-
-  <p><a href="{% url 'main:show_product' product.id %}"><button>Read More</button></a></p>
-
-  {% if product.user %}
-    <p>Author: {{ product.user.username }}</p>
+  {% if not product_list %}
+  <div class="empty-placeholder">
+    <img src="{% static 'image/no-product.png' %}" alt="no products">
+    <h4>Belum Ada Product yang Dijual Saat Ini.</h4>
+    <p class="small-muted">Klik <strong>+ Add Product</strong> untuk menambahkan produk pertamamu.</p>
+    <a href="{% url 'main:create_product' %}" class="btn btn-primary mt-2">Tambah Produk</a>
+  </div>
   {% else %}
-    <p>Author: Anonymous</p>
+  <div class="cards-grid mt-3">
+    {% for product in product_list %}
+      {% include 'card_product.html' %}
+    {% endfor %}
+  </div>
   {% endif %}
 </div>
-<hr>
-{% endfor %}
 
-{% endif %}
 {% endblock content %}
