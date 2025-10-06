@@ -21,13 +21,16 @@
           </table>
         </form>
 
-        {% if messages %}
-        <ul class="mt-3">
-          {% for message in messages %}
-          <li class="small-muted">{{ message }}</li>
-          {% endfor %}
-        </ul>
-        {% endif %}
+        {# fallback untuk user tanpa JS: tampilkan pesan di dalam <noscript> saja #}
+        <noscript>
+          {% if messages %}
+          <ul class="mt-3">
+            {% for message in messages %}
+            <li class="small-muted">{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </noscript>
 
         <p class="mt-3">Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a></p>
       </div>

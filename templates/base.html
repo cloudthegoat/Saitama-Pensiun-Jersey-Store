@@ -16,7 +16,81 @@
 
     {% block extra_head %}{% endblock extra_head %}
   </head>
+
   <body>
+    {# include toast UI + toast.js (pastikan templates/toast.html & static/js/toast.js ada) #}
+    {% include 'toast.html' %}
+
+    {# --- Place Django messages as raw JSON (no JS code inside template) --- #}
+    {% if messages %}
+    <script id="django-messages-data" type="application/json">
+    [
+      {% for message in messages %}
+        { "text": "{{ message|escapejs }}", "tags": "{{ message.tags|default:''|escapejs }}" }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+    </script>
+    {% endif %}
+
+    {# --- Small JS to read the JSON and call ToastManager (pure JS, no template tags) --- #}
+    <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        try {
+          var scriptEl = document.getElementById('django-messages-data');
+          if (!scriptEl) return;
+
+          var djangoMessages = JSON.parse(scriptEl.textContent || '[]');
+
+          var titleMap = {
+            'success': 'Berhasil',
+            'error': 'Gagal',
+            'warn': 'Peringatan',
+            'warning': 'Peringatan',
+            'info': 'Info',
+            'debug': 'Info'
+          };
+
+          function mapTagsToLevel(tags) {
+            var t = (tags || '').toLowerCase();
+            if (t.indexOf('error') !== -1) return 'error';
+            if (t.indexOf('success') !== -1) return 'success';
+            if (t.indexOf('warn') !== -1 || t.indexOf('warning') !== -1) return 'warn';
+            if (t.indexOf('info') !== -1) return 'info';
+            return 'info';
+          }
+
+          djangoMessages.forEach(function(msg) {
+            // split text and optional title using delimiter |||
+            var text = msg.text || '';
+            var customTitle = null;
+            var DELIM = '|||';
+            if (text.indexOf(DELIM) !== -1) {
+              var parts = text.split(DELIM);
+              // everything before delimiter is the real message
+              text = parts[0].trim();
+              // everything after delimiter is the custom title (join in case delimiter appears multiple times)
+              customTitle = parts.slice(1).join(DELIM).trim();
+            }
+
+            var level = mapTagsToLevel(msg.tags);
+            var title = customTitle || (titleMap[level] || 'Info');
+
+            if (window.ToastManager && typeof window.ToastManager[level] === 'function') {
+              window.ToastManager[level](text, title);
+            } else if (window.ToastManager && typeof window.ToastManager.show === 'function') {
+              window.ToastManager.show({ message: text, title: title, type: level });
+            } else {
+              // fallback: console (won't break page)
+              console.log('Toast fallback:', level, title, text);
+            }
+          });
+        } catch (e) {
+          // parsing error or something unexpected — fail safely
+          console.error('Error reading Django messages for toasts:', e);
+        }
+      });
+    </script>
+
     {% block content %}{% endblock content %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -28,6 +102,7 @@
         }
       }
     </script>
+
     {% block extra_js %}{% endblock extra_js %}
   </body>
 </html>
