@@ -8,6 +8,7 @@
   --radius: 14px;
   --card-radius: 12px;
   --font: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --read-blue: #1e90ff; /* warna biru untuk Read button */
 }
 
 *{box-sizing:border-box}
@@ -99,12 +100,99 @@ h1{font-size:2.2rem}
 .card-actions{
   display:flex;gap:.5rem;align-items:center;justify-content:space-between;margin-top:.6rem;
 }
+
+/* -------- BUTTON STYLES: improved visibility on dark cards -------- */
+/* Base btn-card: outline visible, slight glass background, smooth hover */
 .btn-card{
-  border-radius:10px;padding:.45rem .6rem;font-weight:700;font-size:.85rem;
-  box-shadow:none;border:1px solid rgba(255,255,255,0.03);
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+  border-radius:10px;
+  padding:.45rem .6rem;
+  font-weight:700;
+  font-size:.85rem;
+  box-shadow:none;
+  border:1.6px solid rgba(255,255,255,0.10);
+  background: linear-gradient(180deg, rgba(255,255,255,0.014), rgba(255,255,255,0.005));
+  color: #fff;
+  text-decoration: none; /* remove underline for anchor buttons */
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  backdrop-filter: blur(2px);
 }
-.btn-edit{background:transparent;color:var(--accent);border-color:var(--accent)}
-.btn-delete{background:transparent;color:#ff6a6a;border-color:rgba(255,106,106,0.14)}
+
+/* add spacing between adjacent buttons to avoid crowding */
+.product-card .card-actions .btn-card + .btn-card {
+  margin-left: 0.6rem;
+}
+
+/* Edit: accent outline and orange text (as requested) */
+.btn-card.btn-edit {
+  border-color: var(--accent);
+  color: var(--accent); /* orange text */
+  background: linear-gradient(90deg, rgba(255,106,0,0.06), transparent);
+}
+
+/* Read: blue outline and blue text, no underline (force) */
+.btn-card.btn-read {
+  border-color: var(--read-blue) !important;
+  color: var(--read-blue) !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  -webkit-text-decoration: none !important;
+  -moz-text-decoration: none !important;
+  outline: none;
+}
+
+/* anchor-specific variants for Read (force remove underline) */
+.btn-card.btn-read:link,
+.btn-card.btn-read:visited,
+.btn-card.btn-read:hover,
+.btn-card.btn-read:focus {
+  text-decoration: none !important;
+  -webkit-text-decoration: none !important;
+  -moz-text-decoration: none !important;
+}
+
+/* Delete: red outline and subtle transparent bg */
+.btn-card.btn-delete {
+  border-color: #ff6a6a;
+  color: #ff6a6a;
+  background: rgba(255,106,106,0.02);
+}
+
+/* Hover / focus states */
+.btn-card:hover,
+.btn-card:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+  border-color: rgba(255,255,255,0.18);
+  outline: none;
+}
+
+/* stronger hover for accent buttons */
+.btn-card.btn-edit:hover {
+  border-color: #ff8b45;
+  background: linear-gradient(90deg, rgba(255,106,0,0.18), rgba(255,140,69,0.03));
+}
+
+/* hover for read: slightly darker blue outline */
+.btn-card.btn-read:hover,
+.btn-card.btn-read:focus {
+  border-color: #3aa0ff;
+  background: rgba(30,144,255,0.03);
+  color: #0f6fe6 !important;
+}
+
+/* accessibility: visible focus ring */
+.btn-card:focus-visible {
+  box-shadow: 0 0 0 3px rgba(255,106,0,0.14);
+  border-color: #ff8b45;
+}
+
+/* small tweak for non-owner text so it doesn't clash (kept for other uses) */
+.card-actions .small-muted { color: var(--muted); font-size: .9rem; margin-left: .5rem; }
+
+/* -------- end button styles -------- */
 
 /* form styling (for table-based Django forms) */
 form table{width:100%;border-collapse:separate;border-spacing:0 10px}

@@ -69,18 +69,48 @@
   const PLACEHOLDER_THUMB = (window.PLACEHOLDER_THUMB && window.PLACEHOLDER_THUMB.length) ? window.PLACEHOLDER_THUMB : '/static/image/no-product.png';
   const CURRENT_USER = (typeof window.CURRENT_USER === 'string') ? window.CURRENT_USER : '';
 
+  // helper to get current page filter param (all|my|featured)
+  function getCurrentFilter() {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const f = sp.get('filter');
+      return f ? f : 'all';
+    } catch (e) {
+      return 'all';
+    }
+  }
+
   function buildCardHTML(p){
     const thumb = p.thumbnail || '';
     const featured = p.is_featured ? `<span class="badge-featured">Featured</span>` : '';
     const author = p.user || '';
-    // Only render edit/delete if author equals current user
+    // Only render edit/delete if current tab is "my" AND author equals current user
+    const currentFilter = getCurrentFilter();
+    const isMyTab = (currentFilter === 'my');
     const isOwner = (author && CURRENT_USER && author === CURRENT_USER);
-    const actionsHTML = isOwner ? `
+
+    // Read button — navigates to product detail page (same-site)
+    const readBtn = `<a href="/product/${encodeURIComponent(p.id)}/" class="btn-card btn-read" role="button">Read</a>`;
+
+    let actionsHTML = '';
+
+    if (isMyTab && isOwner) {
+      // in My Products tab, owner sees Read + Edit + Delete
+      actionsHTML = `
       <div>
+        ${readBtn}
         <button class="btn-card btn-edit" data-action="edit" data-id="${p.id}">Edit</button>
         <button class="btn-card btn-delete" data-action="delete" data-id="${p.id}">Delete</button>
       </div>
-    ` : `<div class="small-muted">You are not the owner</div>`;
+      `;
+    } else {
+      // in All/Featured (or non-owner in My tab) show only Read
+      actionsHTML = `
+      <div>
+        ${readBtn}
+      </div>
+      `;
+    }
 
     return `
       <div class="product-card" data-id="${p.id}">

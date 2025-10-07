@@ -61,7 +61,7 @@ def show_main(request):
 # --------------------------
 
 @login_required(login_url='/login')
-def api_product_list(request):
+def api_product_list(request):  
     """
     GET: return JSON list of products ordered newest-first.
     Supports optional filtering via ?filter=all|my|featured

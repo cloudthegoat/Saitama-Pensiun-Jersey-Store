@@ -19,13 +19,7 @@
         <li class="nav-item"><a class="nav-link" href="#">About</a></li>
 
         {% if user.is_authenticated %}
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">{{ user.username }}</a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="{% url 'main:create_product' %}">Add Product</a></li>
-            <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
-          </ul>
-        </li>
+        <a class="nav-link" href="#">{{ user.username }}</a>
         {% else %}
         <li class="nav-item"><a class="btn btn-outline-light btn-sm ms-2" href="{% url 'main:login' %}">Sign in</a></li>
         <li class="nav-item"><a class="btn btn-warning btn-sm ms-2" href="{% url 'main:register' %}">Register</a></li>

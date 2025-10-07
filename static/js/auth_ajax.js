@@ -171,4 +171,9 @@
   }
 
   window.AuthAjax = { init, ajaxLogin, ajaxRegister, logout };
+  document.addEventListener('DOMContentLoaded', function () {
+    setTimeout(() => {
+      window.AuthAjax.init();
+    }, 30);
+  });
 })(window, document);
