@@ -1,0 +1,98 @@
+<!-- modal.html - modal markup used by product_ajax.js
+     Styled to match global.css (dark theme). -->
+<div id="sp-modals-root">
+  <!-- Product Form Modal -->
+  <div id="productModal" class="sp-modal" aria-hidden="true">
+    <div class="sp-modal__backdrop" data-close></div>
+    <div class="sp-modal__dialog">
+      <header class="sp-modal__header">
+        <h3 id="productModalTitle">Create Product</h3>
+        <button class="sp-modal__close" data-close aria-label="Close">&times;</button>
+      </header>
+      <main class="sp-modal__body">
+        <form id="productForm">
+          <input type="hidden" name="id" id="product-id" />
+          <div class="form-row">
+            <label>Nama</label>
+            <input name="name" id="product-name" required />
+            <div class="field-error" data-field="name"></div>
+          </div>
+          <div class="form-row">
+            <label>Deskripsi</label>
+            <textarea name="description" id="product-description" rows="3"></textarea>
+            <div class="field-error" data-field="description"></div>
+          </div>
+          <div class="form-row">
+            <label>Harga</label>
+            <input name="price" id="product-price" type="number" min="0" required />
+            <div class="field-error" data-field="price"></div>
+          </div>
+          <div class="form-row">
+            <label>Kategori</label>
+            <select name="category" id="product-category">
+              <option value="jersey premier league">Jersey Premier League</option>
+              <option value="jersey laliga">Jersey LALIGA</option>
+              <option value="jersey serie a">Jersey Serie A</option>
+              <option value="jersey bundesliga">Jersey Bundesliga</option>
+              <option value="jersey ligue 1">Jersey Ligue 1</option>
+              <option value="jersey timnas indonesia">Jersey Timnas Indonesia</option>
+            </select>
+            <div class="field-error" data-field="category"></div>
+          </div>
+          <div class="form-row">
+            <label>Thumbnail (URL)</label>
+            <input name="thumbnail" id="product-thumbnail" placeholder="https://..." />
+            <div class="field-error" data-field="thumbnail"></div>
+          </div>
+          <div class="form-row">
+            <label>Featured</label>
+            <input type="checkbox" name="is_featured" id="product-featured" />
+            <div class="field-error" data-field="is_featured"></div>
+          </div>
+        </form>
+
+        <div id="modal-form-status" class="small-muted mt-2"></div>
+      </main>
+      <footer class="sp-modal__footer">
+        <button class="btn btn-outline-light" data-close>Cancel</button>
+        <button id="productFormSubmit" class="btn btn-primary">Save</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div id="confirmModal" class="sp-modal" aria-hidden="true">
+    <div class="sp-modal__backdrop" data-close></div>
+    <div class="sp-modal__dialog">
+      <header class="sp-modal__header">
+        <h3>Konfirmasi Hapus</h3>
+        <button class="sp-modal__close" data-close aria-label="Close">&times;</button>
+      </header>
+      <main class="sp-modal__body">
+        <p>Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.</p>
+      </main>
+      <footer class="sp-modal__footer">
+        <button class="btn btn-outline-light" data-close>Batal</button>
+        <button id="confirmDeleteBtn" class="btn btn-danger">Hapus</button>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Minimal modal styles integrating with global.css */
+.sp-modal { position: fixed; inset: 0; display: none; z-index: 10000; }
+.sp-modal[aria-hidden="false"] { display: block; }
+.sp-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
+.sp-modal__dialog { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 720px; max-width: calc(100% - 40px); background: var(--panel); border-radius: var(--radius); padding: 0; border:1px solid rgba(255,255,255,0.03); box-shadow: 0 20px 60px rgba(0,0,0,0.6); overflow:hidden; }
+.sp-modal__header { padding: 16px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.02); }
+.sp-modal__header h3{ margin:0 }
+.sp-modal__close { background:transparent;border:none;color:var(--muted);font-size:28px;line-height:1;cursor:pointer }
+.sp-modal__body { padding: 18px; max-height:60vh; overflow:auto }
+.sp-modal__footer { padding: 12px 18px; display:flex; gap:8px; justify-content:flex-end; border-top:1px solid rgba(255,255,255,0.02) }
+.form-row { margin-bottom: 12px; display:flex; gap:12px; align-items:center }
+.form-row label { width:28%; text-align:right; color:var(--muted); padding-right:8px }
+.form-row input[type="text"], .form-row input[type="number"], .form-row textarea, .form-row select { width:72%; padding:.55rem; border-radius:10px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); color:#fff }
+.field-error{ color:#ff7b7b; font-size:.85rem; margin-top:6px; padding-left:28% }
+.small-muted{ color:var(--muted) }
+</style>
