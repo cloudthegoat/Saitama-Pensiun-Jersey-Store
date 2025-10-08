@@ -2,42 +2,209 @@
 {% load static %}
 {% block content %}
 {% include 'navbar.html' %}
-<div class="container">
-  <a href="{% url 'main:show_main' %}" class="back-btn mb-3 d-inline-block">← Back to Product List</a>
 
-  <div class="row">
-    <div class="col-md-6">
-      {% if product.thumbnail %}
-        <img src="{{ product.thumbnail }}" alt="{{ product.name }}" class="img-fluid rounded-3 mb-3">
-      {% else %}
-        <img src="{% static 'images/placeholder-thumb.jpg' %}" alt="thumb" class="img-fluid rounded-3 mb-3">
-      {% endif %}
-    </div>
-    <div class="col-md-6">
-      <div class="product-detail">
-        <h2>{{ product.name }}</h2>
-        <p class="small-muted"><b>{{ product.get_category_display }}</b> {% if product.is_featured %} • <span class="badge-featured">Featured</span>{% endif %}</p>
-        <p class="small-muted">Created: {{ product.created_at|date:"d M Y, H:i" }}</p>
-        <hr />
-        <div class="product-description">
-          {{ product.description|linebreaks }}
+<div class="container">
+  <div id="productDetailState">
+    <div id="productLoading" class="small-muted">Loading product...</div>
+    <div id="productError" class="small-muted" style="display:none;"></div>
+
+    <div id="productDetail" style="display:none;">
+      <div class="product-detail" style="display:flex;gap:1.25rem;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:0 0 320px;max-width:320px;">
+          <img id="productImage" src="{% static 'image/no-product.png' %}" alt="thumbnail" style="width:100%;border-radius:12px;object-fit:cover;border:1px solid rgba(255,255,255,0.03);" />
         </div>
 
-        <div class="mt-3">
-            {% if user.is_authenticated and product.user == user %}
-                <a href="{% url 'main:edit_product' product.pk %}" class="btn btn-primary me-2">Edit</a>
+        <div style="flex:1;min-width:260px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:.6rem">
+            <h2 id="productName" style="margin:0;">Product Name</h2>
+            <!-- Back button placed at top-right -->
+            <div>
+              <button id="btnBack" class="back-btn">Back</button>
+            </div>
+          </div>
 
-                <button
-                    data-url="{% url 'main:delete_product' product.pk %}"
-                    onclick="confirmDelete(this.dataset.url)"
-                    class="btn btn-outline-danger"
-                >
-                    Delete
-                </button>
-            {% endif %}
+          <div class="small-muted" id="productMeta" style="margin-bottom:.6rem;">Category • By: <span id="productAuthor"></span></div>
+
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+            <div style="font-weight:800;font-size:1.25rem" id="productPrice">Rp 0</div>
+            <div class="small-muted" id="productCreatedAt"></div>
+          </div>
+
+          <div id="productDescription" class="product-description" style="margin-bottom:1rem;color:#fff;">
+            <!-- description rendered here -->
+          </div>
+
+          <div id="productDetailActions" style="display:flex;gap:.6rem;align-items:center;">
+            <!-- Edit and Delete will be injected if owner; otherwise nothing -->
+            <a id="btnEditPage" href="#" class="btn-card btn-edit" style="display:none;">Edit</a>
+            <button id="btnDelete" class="btn-card btn-delete" style="display:none;">Delete</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+(function(){
+  // small helpers (local)
+  function escapeHtml(s){ if (!s && s !== 0) return ''; return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); }); }
+  function formatNumber(n){ if (n===null||n===undefined) return ''; return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
+  function qs(sel){ return document.querySelector(sel); }
+  function getCSRF(){ const v = document.cookie.match('(^|;)\\s*' + 'csrftoken' + '\\s*=\\s*([^;]+)'); return v ? v.pop() : ''; }
+
+  // determine product id from URL: last path segment (robust)
+  function getProductIdFromPath(){
+    try {
+      const p = window.location.pathname.replace(/\/+$/, ''); // remove trailing slash
+      const parts = p.split('/');
+      return parts[parts.length-1] || '';
+    } catch(e) { return ''; }
+  }
+
+  // Build API detail endpoint from injected PRODUCT_API_ROOT (falls back to /api/products/)
+  function buildDetailEndpoint(id){
+    let root = '/api/products/';
+    try {
+      if (window.PRODUCT_API_ROOT && window.PRODUCT_API_ROOT.length) root = window.PRODUCT_API_ROOT;
+    } catch(e){}
+    // normalize: remove trailing slashes then add one
+    root = root.replace(/\/+$/, '') + '/';
+    return root + encodeURIComponent(id) + '/';
+  }
+
+  // Build API delete endpoint: base + id + '/delete/'
+  function buildDeleteEndpoint(id){
+    let root = '/api/products/';
+    try {
+      if (window.PRODUCT_API_ROOT && window.PRODUCT_API_ROOT.length) root = window.PRODUCT_API_ROOT;
+    } catch(e){}
+    root = root.replace(/\/+$/, '') + '/';
+    return root + encodeURIComponent(id) + '/delete/';
+  }
+
+  // Back button behavior: prefer history.back() if possible, otherwise go to main page '/'
+  function attachBackButton(){
+    const btnBack = qs('#btnBack');
+    if (!btnBack) return;
+    btnBack.addEventListener('click', function(ev){
+      ev.preventDefault();
+      try {
+        if (window.history && window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '/';
+        }
+      } catch (e) {
+        window.location.href = '/';
+      }
+    });
+  }
+
+  async function fetchAndRender(){
+    const loading = qs('#productLoading');
+    const error = qs('#productError');
+    const detail = qs('#productDetail');
+    loading.style.display = '';
+    error.style.display = 'none';
+    detail.style.display = 'none';
+
+    const id = getProductIdFromPath();
+    if (!id) {
+      loading.style.display = 'none';
+      error.style.display = '';
+      error.textContent = 'Invalid product id in URL.';
+      return;
+    }
+
+    const endpoint = buildDetailEndpoint(id);
+
+    try {
+      const resp = await fetch(endpoint, { credentials: 'same-origin' });
+      if (!resp.ok) {
+        let txt = await resp.text();
+        try { const j = JSON.parse(txt); if (j && j.message) txt = j.message; } catch(e){}
+        throw new Error('Gagal memuat produk (kode ' + resp.status + '): ' + (txt || resp.statusText));
+      }
+      const data = await resp.json();
+      if (!data || data.status !== 'success') throw new Error((data && data.message) ? data.message : 'Invalid response');
+
+      const p = data.product;
+      // populate DOM
+      // use per-product no-image.png when thumbnail missing
+      qs('#productImage').src = (p.thumbnail && p.thumbnail.length) ? p.thumbnail : '/static/image/no-image.png';
+      qs('#productImage').alt = escapeHtml(p.name || 'product');
+      qs('#productName').textContent = p.name || '';
+      qs('#productAuthor').textContent = p.user || 'Unknown';
+      qs('#productMeta').innerHTML = (p.category_display || p.category || '') + ' • By: <strong>' + escapeHtml(p.user || 'Unknown') + '</strong>';
+      qs('#productPrice').textContent = 'Rp ' + formatNumber(p.price);
+      qs('#productCreatedAt').textContent = p.created_at ? ('Created: ' + escapeHtml(p.created_at)) : '';
+      qs('#productDescription').innerHTML = p.description ? escapeHtml(p.description).replace(/\n/g,'<br>') : '<em class="small-muted">No description</em>';
+
+      // attach back button behavior
+      attachBackButton();
+
+      // actions: show Edit/Delete if owner
+      const isOwner = (window.CURRENT_USER && p.user && window.CURRENT_USER === p.user);
+
+      const btnEdit = qs('#btnEditPage');
+      const btnDelete = qs('#btnDelete');
+
+      if (isOwner) {
+        btnEdit.style.display = '';
+        btnEdit.setAttribute('href', '/product/' + encodeURIComponent(p.id) + '/edit');
+
+        btnDelete.style.display = '';
+        // attach delete handler once
+        btnDelete.addEventListener('click', async function onDelete(ev){
+          if (!confirm('Yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.')) return;
+          try {
+            btnDelete.disabled = true;
+            btnDelete.textContent = 'Deleting...';
+            const deleteUrl = buildDeleteEndpoint(p.id);
+            const dresp = await fetch(deleteUrl, {
+              method: 'POST',
+              credentials: 'same-origin',
+              headers: { 'X-CSRFToken': getCSRF() }
+            });
+            if (!dresp.ok) {
+              let txt = await dresp.text();
+              try { const j = JSON.parse(txt); if (j && j.message) txt = j.message; } catch(e){}
+              throw new Error('Gagal hapus (kode ' + dresp.status + '): ' + (txt || dresp.statusText));
+            }
+            const djson = await dresp.json();
+            if (!(djson && djson.status === 'success')) throw new Error(djson && djson.message ? djson.message : 'Gagal menghapus produk');
+            if (window.ToastManager) window.ToastManager.success(djson.message || 'Produk terhapus', 'Delete Product');
+            // redirect back to main after delete
+            setTimeout(function(){ window.location.href = '/'; }, 300);
+          } catch (e) {
+            console.error('[ProductDetail] delete error', e);
+            if (window.ToastManager) window.ToastManager.error((e && e.message) ? e.message : 'Gagal menghapus produk', 'Error');
+            btnDelete.disabled = false;
+            btnDelete.textContent = 'Delete';
+          }
+        }, { once: true });
+      } else {
+        btnEdit.style.display = 'none';
+        btnDelete.style.display = 'none';
+      }
+
+      // show detail
+      loading.style.display = 'none';
+      detail.style.display = '';
+    } catch (err) {
+      loading.style.display = 'none';
+      error.style.display = '';
+      error.textContent = err.message || 'Gagal memuat produk';
+      console.error('[ProductDetail] fetch error:', err);
+      if (window.ToastManager) window.ToastManager.error((err && err.message) ? err.message : 'Gagal memuat produk', 'Error');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    fetchAndRender();
+  });
+})();
+</script>
+
 {% endblock content %}

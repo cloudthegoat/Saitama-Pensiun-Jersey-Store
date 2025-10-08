@@ -65,8 +65,12 @@
     confirmModal: () => document.getElementById('confirmModal')
   };
 
-  // Use injected placeholder if provided by base.html
-  const PLACEHOLDER_THUMB = (window.PLACEHOLDER_THUMB && window.PLACEHOLDER_THUMB.length) ? window.PLACEHOLDER_THUMB : '/static/image/no-product.png';
+  // Placeholders:
+  // - INJECTED_PLACEHOLDER is what base.html exposes for the *empty list* (no-product.png).
+  // - NO_IMAGE_PRODUCT is the image to use per-product when user didn't provide a thumbnail.
+  const INJECTED_PLACEHOLDER = (window.PLACEHOLDER_THUMB && window.PLACEHOLDER_THUMB.length) ? window.PLACEHOLDER_THUMB : '/static/image/no-product.png';
+  const NO_IMAGE_PRODUCT = '/static/image/no-image.png';
+
   const CURRENT_USER = (typeof window.CURRENT_USER === 'string') ? window.CURRENT_USER : '';
 
   // helper to get current page filter param (all|my|featured)
@@ -88,6 +92,10 @@
     const currentFilter = getCurrentFilter();
     const isMyTab = (currentFilter === 'my');
     const isOwner = (author && CURRENT_USER && author === CURRENT_USER);
+
+    // If product has thumbnail -> use it.
+    // If product has no thumbnail -> use NO_IMAGE_PRODUCT (new image you added).
+    const thumbSrc = thumb && thumb.length ? thumb : NO_IMAGE_PRODUCT;
 
     // Read button — navigates to product detail page (same-site)
     const readBtn = `<a href="/product/${encodeURIComponent(p.id)}/" class="btn-card btn-read" role="button">Read</a>`;
@@ -114,7 +122,7 @@
 
     return `
       <div class="product-card" data-id="${p.id}">
-        <img class="card-thumb" src="${thumb || PLACEHOLDER_THUMB}" alt="${escapeHtml(p.name)}" />
+        <img class="card-thumb" src="${thumbSrc}" alt="${escapeHtml(p.name)}" />
         <div class="card-title">${escapeHtml(p.name)}</div>
         <div class="card-meta">${escapeHtml(p.category_display || p.category)} ${featured}</div>
         <div class="card-author small-muted">By: ${escapeHtml(author || 'Unknown')}</div>
