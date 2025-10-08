@@ -1,9 +1,5 @@
-{% load static %}
-{# modal.html - modal markup used by product_ajax.js
-   Styled to match global.css (dark theme).
-#}
 <div id="sp-modals-root">
-  <!-- Product Form Modal (existing) -->
+  <!-- Product Form Modal -->
   <div id="productModal" class="sp-modal" aria-hidden="true">
     <div class="sp-modal__backdrop" data-close></div>
     <div class="sp-modal__dialog">
@@ -58,36 +54,6 @@
       <footer class="sp-modal__footer">
         <button class="btn btn-outline-light" data-close>Cancel</button>
         <button id="productFormSubmit" class="btn btn-primary">Save</button>
-      </footer>
-    </div>
-  </div>
-
-  <!-- Product Detail Modal (NEW) -->
-  <div id="productDetailModal" class="sp-modal" aria-hidden="true">
-    <div class="sp-modal__backdrop" data-close></div>
-    <div class="sp-modal__dialog">
-      <header class="sp-modal__header">
-        <h3 id="productDetailTitle">Product</h3>
-        <button class="sp-modal__close" data-close aria-label="Close">&times;</button>
-      </header>
-      <main class="sp-modal__body">
-        <div id="productDetailContent">
-          <img id="productDetailImage" src="{% static 'image/no-product.png' %}" alt="thumbnail" style="width:100%;height:240px;object-fit:cover;border-radius:10px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.03)" />
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:6px">
-            <div>
-              <div id="productDetailCategory" class="small-muted" style="font-size:.9rem"></div>
-              <h4 id="productDetailAuthor" style="margin:6px 0 0 0;font-size:1.15rem"></h4>
-            </div>
-            <div style="text-align:right">
-              <div id="productDetailPrice" style="font-weight:800;font-size:1.1rem"></div>
-            </div>
-          </div>
-          <div id="productDetailDescription" style="margin-top:10px;color:#fff;line-height:1.7"></div>
-        </div>
-      </main>
-      <footer class="sp-modal__footer" style="display:flex;gap:8px;justify-content:flex-end">
-        <a id="productDetailFullLink" class="btn btn-outline-light" href="#" target="_blank">Open full page</a>
-        <button class="btn btn-outline-light" data-close>Close</button>
       </footer>
     </div>
   </div>

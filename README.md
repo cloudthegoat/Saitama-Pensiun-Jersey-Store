@@ -360,3 +360,59 @@ referensi: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout?
 - membuat tiga button utk card product, yaitu read, edit, dan delete
 - menambahkan icon no-product.png di main.html jika tidak ada product untuk ditampilkan
 - SELESAI
+
+Tugas Individu 6
+
+Jawaban:
+
+1. Perbedaan synchronous request vs asynchronous request
+- Synchronous request: pemanggilan yang blocking — browser/JS menunggu respons dari server sebelum melanjutkan eksekusi kode. Akibatnya UI bisa “membeku” kalau server lambat.
+- Asynchronous request: pemanggilan non-blocking — JS mengirim request lalu bisa terus menjalankan kode lain; ketika respons datang, callback / Promise menangani hasilnya. Ini memungkinkan interaksi yang lebih lancar dan responsif.
+- Referensi:
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest_API/Synchronous_and_Asynchronous_Requests
+https://nordicapis.com/the-differences-between-synchronous-and-asynchronous-apis/
+
+2. Bagaimana AJAX bekerja di Django — alur request–response
+- Klien (browser): pengguna melakukan aksi (klik/form submit). JS (Fetch API / XMLHttpRequest / jQuery.ajax) membentuk request (GET/POST/PUT/DELETE) dan mengirim ke URL endpoint di server.
+- Header penting: untuk metode “unsafe” (POST/PUT/DELETE) sertakan token CSRF (X-CSRFToken) atau gunakan cookie CSRF agar Django bisa memverifikasi.
+- Django menerima request: Django membuat HttpRequest lalu memetakan ke view sesuai URL routing. Middleware (termasuk CSRF middleware) memproses request.
+- View: memproses data (validasi, autentikasi, DB), lalu mengembalikan response — untuk AJAX biasanya JsonResponse atau HttpResponse dengan application/json.
+- Klien: JS menerima JSON/HTML fragment, lalu memanipulasi DOM (update bagian halaman) tanpa reload penuh.
+- Referensi:
+https://docs.djangoproject.com/en/5.2/ref/request-response/
+https://testdriven.io/blog/django-ajax-xhr/
+
+3. Keuntungan menggunakan AJAX dibandingkan render biasa
+- Perceived performance lebih baik — hanya bagian halaman yang berubah sehingga terasa lebih cepat bagi pengguna.
+- Hemat bandwidth / server load — mengirim data kecil (JSON / fragment) dibanding seluruh HTML halaman.
+- Menjaga state klien — input form, posisi scroll, state JS tidak hilang karena tidak reload seluruh halaman.
+- Interaktivitas real-time — cocok untuk update live, validasi inline, autocomplete, polling atau partial refresh.
+- UX lebih halus — transisi dan feedback instan (mis. notifikasi tanpa reload).
+- Referensi:
+https://www.jsoftware.us/vol3/jsw0303-04.pdf
+https://www.greatfrontend.com/questions/quiz/what-are-the-advantages-and-disadvantages-of-using-ajax
+
+4. Cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django
+- Prinsip utama: jangan re-implement auth dengan cara yang tidak aman; pakai best practices Django + standar web security.
+## Hal-hal yang perlu dilakukan untuk memastikan keamanan:
+1) CSRF: pastikan middleware CSRF aktif dan kirim token CSRF di header (X-CSRFToken) saat melakukan POST/PUT/DELETE dari JS. Jangan menonaktifkan CSRF untuk form sensitif. 
+2) HTTPS/TLS: selalu kirim kredensial lewat HTTPS agar token/credential tidak bocor. (transport security). 
+3) Validasi & sanitasi server-side: jangan hanya mengandalkan JS; validasi username/password/email di server.
+4) Hindari mengembalikan data sensitif: response JSON untuk login tidak boleh mengandung password, session secret, atau data sensitif lainnya. Kembalikan only what’s necessary (status, pesan, token non-sensitive).
+5) Gunakan mekanisme otentikasi yang tepat:
+- untuk web normal gunakan session cookies (Secure, HttpOnly, SameSite) + CSRF;
+- untuk API (mobile/third-party) gunakan token (JWT atau token berbasis server) dengan kebijakan CORS yang ketat. 
+6) Rate limiting & brute-force protection: pakai paket seperti django-axes, atau middleware throttling agar percobaan login berulang dibatasi.
+7) Proteksi terhadap XSS: XSS bisa mencuri cookie/CSRF token; lakukan output escaping, Content Security Policy (CSP), dan validasi input.
+- Referensi:
+https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+https://docs.djangoproject.com/en/5.2/howto/csrf/
+
+5. Bagaimana AJAX mempengaruhi User Experience (UX) website
+## Positif
+- Responsif & terasa cepat — karena hanya sebagian halaman diperbarui, pengguna merasakan latency lebih kecil.
+- Lebih interaktif — inline validation, live search, notifikasi, dan update real-time meningkatkan engagement.
+ ## Negatif
+- Back/forward button & URL — AJAX tanpa pengelolaan history membuat back button tidak konsisten; gunakan History API (pushState/popstate) bila perlu. 
+- Aksesibilitas & progressive enhancement — pastikan fungsionalitas penting tetap bekerja tanpa JS atau sediakan fallback; desain dengan progressive enhancement agar pengguna dengan kemampuan terbatas tetap dapat mengakses konten. 
+- Feedback & keandalan — karena aksi terjadi di background, berikan indikator loading, konfirmasi sukses/gagal, dan handling untuk kegagalan jaringan agar pengguna tidak bingung. (juga perhatikan konsistensi state sehingga pengguna yakin data tersimpan).
