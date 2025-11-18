@@ -16,6 +16,10 @@ from django.views.decorators.http import require_POST
 from django.core.serializers.json import DjangoJSONEncoder
 import traceback
 from django.conf import settings
+from django.core.exceptions import FieldDoesNotExist
+import requests
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.html import strip_tags
 
 # Helper to convert Product -> dict for JSON responses
 def product_to_dict(p):
@@ -37,6 +41,7 @@ def product_to_dict(p):
 def show_main(request):
     # keep existing server-rendered page — JS will fetch fresh list via AJAX
     filter_type = request.GET.get("filter", "all")  # default 'all'
+    sort_type = request.GET.get("sort", "newest")
 
     if filter_type == "all":
         product_list = Product.objects.all()
@@ -45,12 +50,21 @@ def show_main(request):
     else:
         product_list = Product.objects.filter(user=request.user)
 
+    if sort_type == "price_desc":
+        product_list = product_list.order_by("-price")
+    elif sort_type == "price_asc":
+        product_list = product_list.order_by("price")
+    else:
+        product_list = product_list.order_by("-created_at")
+
     context = {
         'npm' : '2406420772',
         'name': request.user.username,
         'class': 'PBP C',
         'product_list': product_list,
-        'last_login': request.COOKIES.get('last_login', 'Never')
+        'last_login': request.COOKIES.get('last_login', 'Never'),
+        'current_filter': filter_type,
+        'current_sort': sort_type,
     }
 
     return render(request, "main.html", context)
@@ -82,7 +96,18 @@ def api_product_list(request):
             # default: all
             qs = Product.objects.all()
 
-        qs = qs.order_by('-created_at')  # newest first if field exists
+        sort_type = request.GET.get("sort", "newest")
+        if sort_type == 'price_desc':
+            qs = qs.order_by('-price')
+        elif sort_type == 'price_asc':
+            qs = qs.order_by('price')
+        else:
+            try:
+                Product._meta.get_field('created_at')
+                qs = qs.order_by('created_at')
+            except FieldDoesNotExist:
+                qs = qs.order_by('-pk')
+                
         data = [product_to_dict(p) for p in qs]
         return JsonResponse({'status': 'success', 'products': data}, encoder=DjangoJSONEncoder)
     except Exception as e:
@@ -339,3 +364,48 @@ def show_json_by_id(request, product_id):
        return HttpResponse(json_data, content_type="application/json")
    except Product.DoesNotExist:
        return HttpResponse(status=404)
+   
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = strip_tags(data.get("name", ""))  # Strip HTML tags
+        price = data.get("price", "")
+        description = strip_tags(data.get("description", ""))  # Strip HTML tags
+        category = data.get("category", "")
+        thumbnail = data.get("thumbnail", "")
+        is_featured = data.get("is_featured", False)
+        user = request.user
+        
+        new_product = Product(
+            name=name,
+            price=price,
+            description=description,
+            category=category,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+            user=user
+        )
+        new_product.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)

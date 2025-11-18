@@ -41,10 +41,16 @@
     </div>
   </div>
 
-  <div class="filter-bar mb-4">
-    <a href="?filter=all" class="btn {% if request.GET.filter == 'all' or not request.GET.filter %}active{% endif %}">All</a>
-    <a href="?filter=my" class="btn {% if request.GET.filter == 'my' %}active{% endif %}">My Products</a>
-    <a href="?filter=featured" class="btn {% if request.GET.filter == 'featured' %}active{% endif %}">Featured</a>
+  <div class=""filter-bar mb-2>
+    <a href="?filter=all{% if current_sort %}&sort={{current_sort}}{%endif%}" class="btn {%if request.GET.filter == 'all' or not request.GET.filter%}active{% endif %}">All</a>
+    <a href="?filter=my{% if current_sort %}&sort={{current_sort}}{%endif%}" class="btn {%if request.GET.filter == 'all' or not request.GET.filter%}active{% endif %}">My Products</a>
+    <a href="?filter=featured{% if current_sort %}&sort={{current_sort}}{%endif%}" class="btn {%if request.GET.filter == 'all' or not request.GET.filter%}active{% endif %}">Featured</a>
+  </div>
+
+  <div class="sort-bar mb-4 d-flex flex-wrap align-items-center gap-2">
+    <span class="small-muted me-1">Sort by price: </span>
+    <a href="?filter={{ current_filter|default:'all' }}&sort=price_desc" class="btn {% if current_sort == 'price_desc' %}active{% endif %}">High to Low</a>
+    <a href="?filter={{ current_filter|default:'all' }}&sort=price_asc" class="btn {% if current_sort == 'price_asc' %}active{% endif %}">Low to High</a>
   </div>
 
   {# states container: loading / error / empty / cards #}
